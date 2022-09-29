@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapGame.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">A2_INFO1113_510567789</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">MapGame.java</span></div><h1>MapGame.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PFont;
+import java.util.*;
+import java.io.*;
+
+
+public class MapGame {
+<span class="fc" id="L11">    private List &lt;Integer&gt; yellowStartLocation = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L12">    private List &lt;Integer&gt;  redStartLocation = new ArrayList&lt;&gt;();</span>
+    private int Playerx;
+    private int Playery;
+    private int Goalx;
+    private int Goaly;
+
+    private PImage[] setUpMap;
+    private PImage clock;
+    private PImage playerLives;
+<span class="fc" id="L21">    public static String[][] mapping = new String[13][15];</span>
+
+<span class="fc" id="L23">    public MapGame() {</span>
+
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * return starting x-coordinate location of player in the map in pixel.
+     * @return Playerx*32
+     */
+    public int getPlayerx() {
+<span class="fc" id="L32">        return Playerx * 32;</span>
+    }
+
+    /**
+     * return starting y-coordinate location of player in the map in pixel.
+     * @return Playery* 32 + 32 + 13
+     */
+    public int getPlayery() {
+        // +13 so that the character is standing at the end of the 32 pixel
+<span class="fc" id="L41">        return Playery * 32 + 32 + 13;</span>
+    }
+
+    /**
+     * return starting x-coordinate location of the goal in the map in pixel.
+     * @return Goalx* 32
+     */
+    public int getGoalx() {
+<span class="fc" id="L49">        return Goalx * 32;</span>
+    }
+
+    /**
+     * return starting y-coordinate location of the goal in the map in pixel.
+     * @return Goaly* 32 + 32 + 13
+     */
+    public int getGoaly() {
+<span class="fc" id="L57">        return Goaly * 32 + 32 + 13;</span>
+    }
+
+    /**
+     * return list of starting x,y coordinates (in index) location of red enemies.
+     * @return redStartLocation
+     */
+    public List&lt;Integer&gt; getRedEnemies() {
+<span class="fc" id="L65">        return redStartLocation;</span>
+    }
+
+    /**
+     * return list of starting x,y coordinates (in index) location of yellow enemies.
+     * @return yellowStartLocation
+     */
+    public List&lt;Integer&gt; getYellowEnemies() {
+<span class="fc" id="L73">        return yellowStartLocation;</span>
+    }
+
+    /**
+     * given the path, this attempts to read in the level text and transfer them to 2d array
+     * @param path to the map file
+     * @return mapping
+     */
+    public static String[][] readMapFile(String path) {
+        try {
+<span class="fc" id="L83">            File loadMapFile = new File(path);</span>
+<span class="fc" id="L84">            Scanner scan = new Scanner(loadMapFile);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            while (scan.hasNextLine()){</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                for (int i = 0; i &lt; 13; i++){</span>
+<span class="fc" id="L87">                    String row = scan.nextLine();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                    for (int j=0; j &lt; 15; j++){</span>
+<span class="fc" id="L89">                        mapping[i][j] = Character.toString(row.charAt(j));</span>
+                        
+
+                    }
+                }
+            }
+<span class="fc" id="L95">            scan.close();</span>
+            
+<span class="nc" id="L97">        }catch(FileNotFoundException e) {</span>
+<span class="nc" id="L98">            e.printStackTrace();</span>
+
+<span class="nc" id="L100">        }catch(IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L101">            System.out.println(&quot;ERROR: INVALID MAP FILE&quot;);</span>
+<span class="nc" id="L102">            System.exit(0);</span>
+<span class="pc" id="L103">        }</span>
+
+<span class="fc" id="L105">        return mapping;</span>
+    }
+
+    /**
+     * given the PApplet object, this attempts to load all the images into the setUpMap array based on the 
+     * information got from the 2d array mapping. This is also used to getting all the starting location of 
+     * goal, enemies and player.
+     * @param app PApplet object to load images of the map
+     */    
+    public void loadMap(PApplet app) {
+<span class="fc" id="L115">        int value = 0;</span>
+        // 195: the total picture of map
+<span class="fc" id="L117">        setUpMap = new PImage[195];</span>
+<span class="fc" id="L118">        redStartLocation = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc" id="L119">        yellowStartLocation = new ArrayList&lt;Integer&gt;();</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (int i = 0; i &lt; 13; i++) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            for (int j = 0; j &lt; 15; j++) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                if (mapping[i][j].equals(&quot;W&quot;)) {</span>
+<span class="fc" id="L124">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/wall/solid.png&quot;);</span>
+                
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                }else if (mapping[i][j].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L127">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/broken/broken.png&quot;);</span>
+                
+<span class="fc bfc" id="L129" title="All 2 branches covered.">                }else if (mapping[i][j].equals(&quot; &quot;)) {</span>
+<span class="fc" id="L130">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+                    
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                }else if (mapping[i][j].equals(&quot;G&quot;)) {</span>
+<span class="fc" id="L133">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/goal/goal.png&quot;);</span>
+<span class="fc" id="L134">                    Goaly = i;</span>
+<span class="fc" id="L135">                    Goalx = j;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">                }else if (mapping[i][j].equals(&quot;P&quot;)) {</span>
+<span class="fc" id="L137">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+<span class="fc" id="L138">                    Playery = i;</span>
+<span class="fc" id="L139">                    Playerx = j;</span>
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                }else if (mapping[i][j].equals(&quot;Y&quot;)) {</span>
+<span class="fc" id="L142">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+<span class="fc" id="L143">                    yellowStartLocation.add(j);</span>
+<span class="fc" id="L144">                    yellowStartLocation.add(i);</span>
+
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                }else if (mapping[i][j].equals(&quot;R&quot;)) {</span>
+<span class="fc" id="L147">                    setUpMap[value] = app.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+<span class="fc" id="L148">                    redStartLocation.add(j);</span>
+<span class="fc" id="L149">                    redStartLocation.add(i);</span>
+
+
+                }
+<span class="fc" id="L153">                value+=1;</span>
+            }
+        }
+<span class="fc" id="L156">        playerLives = app.loadImage(&quot;src/main/resources/icons/player.png&quot;);</span>
+<span class="fc" id="L157">        clock = app.loadImage(&quot;src/main/resources/icons/clock.png&quot;);</span>
+
+<span class="fc" id="L159">    }</span>
+
+    /**
+     * given the PApplet object, this attempts to draw all the images based on the information 
+     * got from the PImage array.
+     * @param app PApplet object to draw the map
+     */    
+    public void draw(PApplet app) {
+<span class="fc" id="L167">        int y_value = 64;</span>
+<span class="fc" id="L168">        int index = 0;</span>
+<span class="fc" id="L169">        int pixel = 0;</span>
+
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (int i = 0; i &lt; 13; i++) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            for (int j = 0; j &lt; 15; j++) {</span>
+<span class="fc" id="L173">                app.image(setUpMap[index],pixel,y_value);</span>
+<span class="fc" id="L174">                index+=1;</span>
+<span class="fc" id="L175">                pixel+=32;</span>
+
+            }
+<span class="fc" id="L178">            y_value+=32;</span>
+<span class="fc" id="L179">            pixel=0;</span>
+        }
+<span class="fc" id="L181">        app.image(playerLives,128,20);</span>
+<span class="fc" id="L182">        app.image(clock,256,20);</span>
+        
+<span class="fc" id="L184">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

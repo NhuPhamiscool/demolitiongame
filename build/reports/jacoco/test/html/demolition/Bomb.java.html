@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bomb.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">A2_INFO1113_510567789</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Bomb.java</span></div><h1>Bomb.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import java.util.*;
+
+
+public class Bomb {
+<span class="fc" id="L9">    private int yVal = 0;</span>
+<span class="fc" id="L10">    private int xVal = 0;</span>
+    private PImage image;
+    private String[][] wallsBroken;
+<span class="fc" id="L13">    private int BOMBcount = 0;</span>
+    
+    private static PImage imageCentre;
+    private static PImage imageVer;
+    private static PImage imageEndtop;
+    private static PImage imageEndbottom;
+    private static PImage imageHon;
+    private static PImage imageEndright;
+    private static PImage imageEndleft;
+<span class="fc" id="L22">    private static PImage[] bombBefore = new PImage [8];</span>
+
+<span class="fc" id="L24">    public int LEFT = 0;</span>
+<span class="fc" id="L25">    public int RIGHT = 0;</span>
+<span class="fc" id="L26">    public int TOP = 0;</span>
+<span class="fc" id="L27">    public int BOTTOM = 0;</span>
+
+    /**
+     * Constructor for a bomb, requires x, y values, and a current map 2d array
+     * @param xVal the coordinate of bomb's x coordinate in pixel
+     * @param yVal the coordinate of bomb's y coordinate in pixel
+     * @param mapPlay the 2d array current map
+     */
+<span class="fc" id="L35">    public Bomb(int xVal, int yVal, String[][] mapPlay) {</span>
+<span class="fc" id="L36">        this.xVal = xVal;</span>
+<span class="fc" id="L37">        this.yVal = yVal;</span>
+<span class="fc" id="L38">        wallsBroken = mapPlay;</span>
+<span class="fc" id="L39">    }</span>
+    
+    /**
+     * return x coordinate of the bomb in the map
+     * @return xVal
+     */
+    public int getxVal() {
+<span class="fc" id="L46">        return this.xVal;</span>
+    }
+
+    /**
+     * return y coordinate of the bomb in the map
+     * @return yVal
+     */
+    public int getyVal() {
+<span class="fc" id="L54">        return this.yVal;</span>
+    }
+
+    /**
+     * given the PApplet object to load bomb's images and explosion images 
+     * @param app PApplet object used to load images
+     */
+    public static void explosionLoad (PApplet app) {
+<span class="fc" id="L62">        imageCentre = app.loadImage(&quot;src/main/resources/explosion/centre.png&quot;);</span>
+<span class="fc" id="L63">        imageVer = app.loadImage(&quot;src/main/resources/explosion/vertical.png&quot;);</span>
+<span class="fc" id="L64">        imageEndtop = app.loadImage(&quot;src/main/resources/explosion/end_top.png&quot;);</span>
+<span class="fc" id="L65">        imageEndbottom = app.loadImage(&quot;src/main/resources/explosion/end_bottom.png&quot;);</span>
+        
+<span class="fc" id="L67">        imageHon = app.loadImage(&quot;src/main/resources/explosion/horizontal.png&quot;);</span>
+<span class="fc" id="L68">        imageEndright = app.loadImage(&quot;src/main/resources/explosion/end_right.png&quot;);</span>
+<span class="fc" id="L69">        imageEndleft = app.loadImage(&quot;src/main/resources/explosion/end_left.png&quot;);</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int i=0; i &lt; 8; i++) {</span>
+<span class="fc" id="L72">            bombBefore[i] = app.loadImage(&quot;src/main/resources/bomb/bomb&quot;+(i+1)+&quot;.png&quot;);</span>
+        }
+    
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * given any 2 coordinates on the map to check if they are either broken or thick walls
+     * return 1 if its thick, -1 if its broken and 0 for none
+     * @param i which represents row in 2d array map
+     * @param j which represents collumn in 2d array map
+     * @return 1,-1 or 0
+     */
+    public int wall(int i, int j) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if(wallsBroken[i][j].equals(&quot;W&quot;)) {</span>
+<span class="fc" id="L86">            return 1;</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        }else if (wallsBroken[i][j].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L89">            wallsBroken[i][j] = &quot; &quot;;</span>
+<span class="fc" id="L90">            return -1;</span>
+        }
+        
+<span class="fc" id="L93">        return 0;</span>
+    }
+
+    /**
+     * calculate the index of 2d array from the pixel to check if there is any
+     * any walls (thick or broken) within 1, or 2 grid space from the bomb location to draw the bottom of
+     * the explosion.
+     * Return 0 if theres thick wall next to the bomb, or return 32 and make change 
+     * to the map if theres a broken wall within 1 grid space from the bomb. Same process goes 
+     * for 2 grid space(fixed bottom 2).
+     * @return 0,32,64
+     */
+    public int drawBottom() {
+<span class="fc" id="L106">        int fixed = this.yVal;</span>
+<span class="fc" id="L107">        int horizontal = xVal/32;</span>
+
+<span class="fc" id="L109">        int fixedBottom1 = (fixed + 32)/32 - 1;</span>
+<span class="fc" id="L110">        int fixedBottom2 = (fixed + 64)/32 - 1;</span>
+
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (wallsBroken[fixedBottom1][horizontal].equals(&quot;W&quot;)) {</span>
+<span class="nc" id="L113">            return 0;</span>
+
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        } else if (wallsBroken[fixedBottom1][horizontal].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L116">            wallsBroken[fixedBottom1][horizontal] = &quot; &quot;;</span>
+<span class="nc" id="L117">            return 32;</span>
+
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        } else if (wallsBroken [fixedBottom2][horizontal].equals(&quot;W&quot;)) {</span>
+<span class="nc" id="L120">            return 32;</span>
+
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        } else if (wallsBroken [fixedBottom2][horizontal].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L123">            wallsBroken[fixedBottom2][horizontal] = &quot; &quot;;</span>
+<span class="nc" id="L124">            return 64;</span>
+
+        } else {
+<span class="fc" id="L127">            return 64;</span>
+        }
+            
+    }
+    
+    /**
+     * calculate the index of 2d array from the pixel to check if there is any
+     * any walls (thick or broken) within 1, or 2 grid space from the bomb location to draw the top
+     * of the explosion.
+     * Return 0 if theres thick wall next to the bomb, or return 32 and make change 
+     * to the map if theres a broken wall within 1 grid space from the bomb. Same process goes 
+     * for 2 grid space(fixed top 2).
+     * @return 0,32,64
+     */
+    public int drawTop() {
+<span class="fc" id="L142">        int fixed = this.yVal;</span>
+<span class="fc" id="L143">        int horizontal = xVal/32;</span>
+
+<span class="fc" id="L145">        int fixedTop1 = (fixed - 32)/32 - 1;</span>
+<span class="fc" id="L146">        int fixedTop2 = (fixed - 64)/32 - 1;</span>
+
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (wallsBroken [fixedTop1][horizontal].equals(&quot;W&quot;)) {            </span>
+<span class="fc" id="L149">            return 0;</span>
+
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        } else if (wallsBroken [fixedTop1][horizontal].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L152">            wallsBroken[fixedTop1][horizontal] = &quot; &quot;;</span>
+<span class="nc" id="L153">            return 32;</span>
+
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        } else if (wallsBroken [fixedTop2][horizontal].equals(&quot;W&quot;)) {</span>
+<span class="nc" id="L156">            return 32;</span>
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        } else if (wallsBroken [fixedTop2][horizontal].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L159">            wallsBroken[fixedTop2][horizontal] = &quot; &quot;;</span>
+<span class="nc" id="L160">            return 64;</span>
+
+        } else {
+<span class="nc" id="L163">            return 64;</span>
+        }
+    }
+
+    /**
+     * calculate the index of 2d array from the pixel to check if there is any
+     * any walls (thick or broken) within 1, or 2 grid space from the bomb location to draw the right
+     * of the explosion.
+     * Return 0 if theres thick wall next to the bomb, or return 32 and make change 
+     * to the map if theres a broken wall within 1 grid space from the bomb. Same process goes 
+     * for 2 grid space(fixed right 2).
+     * @return 0,32,64
+     */
+    public int drawRight() {
+<span class="fc" id="L177">        int fixed = this.xVal;</span>
+<span class="fc" id="L178">        int col = (this.yVal)/32 - 1;</span>
+
+<span class="fc" id="L180">        int fixedRight1 = (fixed + 32)/32;</span>
+<span class="fc" id="L181">        int fixedRight2 = (fixed + 64)/32;</span>
+
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (wallsBroken[col][fixedRight1].equals(&quot;W&quot;)) {</span>
+<span class="nc" id="L184">            return 0;</span>
+
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        } else if (wallsBroken[col][fixedRight1].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L187">            wallsBroken[col][fixedRight1] = &quot; &quot;;</span>
+<span class="nc" id="L188">            return 32;</span>
+
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        } else if (wallsBroken[col][fixedRight2].equals(&quot;W&quot;)) {</span>
+<span class="nc" id="L191">            return 32;</span>
+
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        } else if (wallsBroken[col][fixedRight2].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L194">            wallsBroken[col][fixedRight2] = &quot; &quot;;</span>
+<span class="nc" id="L195">            return 64;</span>
+
+        } else{
+<span class="fc" id="L198">            return 64;</span>
+        }
+    }
+
+    /**
+     * calculate the index of 2d array from the pixel to check if there is any
+     * any walls (thick or broken) within 1, or 2 grid space from the bomb location to draw the left
+     * of the explosion.
+     * Return 0 if theres thick wall next to the bomb, or return 32 and make change 
+     * to the map if theres a broken wall within 1 grid space from the bomb. Same process goes 
+     * for 2 grid space(fixed right 2).
+     * @return 0,32,64
+     */
+    public int drawLeft() {
+<span class="fc" id="L212">        int fixed = this.xVal;</span>
+<span class="fc" id="L213">        int col = (this.yVal)/32 - 1;</span>
+
+<span class="fc" id="L215">        int fixedLeft1 = (fixed - 32)/32;</span>
+<span class="fc" id="L216">        int fixedLeft2 = (fixed - 64)/32;</span>
+
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (wallsBroken[col][fixedLeft1].equals(&quot;W&quot;)) {</span>
+<span class="fc" id="L219">            return 0;</span>
+
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        } else if (wallsBroken[col][fixedLeft1].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L222">            wallsBroken[col][fixedLeft1] = &quot; &quot;;</span>
+<span class="nc" id="L223">            return 32;</span>
+
+<span class="nc bnc" id="L225" title="All 2 branches missed.">        } else if (wallsBroken[col][fixedLeft2].equals(&quot;W&quot;)) {</span>
+<span class="nc" id="L226">            return 32;</span>
+
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        } else if (wallsBroken[col][fixedLeft2].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L229">            wallsBroken[col][fixedLeft1] = &quot; &quot;;</span>
+<span class="nc" id="L230">            return 64;</span>
+        
+        } else {
+<span class="nc" id="L233">            return 64;</span>
+        }
+    }
+
+
+    /**
+     * given the PApplet object to draw the explosion.
+     * if BOMBcount equal 0 (to make sure it will only be called once) then call all the draw method above
+     * to get the information how to draw the explosion.
+     * draw none if the returned value from the draw method is 0, draw explosion for 1 grid space from
+     * the bomb, and if returned value is 64, then draw explosion for 2 grid space.
+     * verExplosion here is for adjusting the explosion image y-coordinate
+     * @param app PApplet object used to draw images
+     */
+    public void explodeDraw(PApplet app) {
+<span class="nc" id="L248">        int verExplosion = (yVal + 19);</span>
+        // centre
+<span class="nc" id="L250">        app.image(imageCentre, xVal, yVal + 19);</span>
+
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (BOMBcount == 0) {</span>
+<span class="nc" id="L253">            LEFT = drawLeft();</span>
+<span class="nc" id="L254">            TOP = drawTop();</span>
+<span class="nc" id="L255">            BOTTOM = drawBottom();</span>
+<span class="nc" id="L256">            RIGHT = drawRight();</span>
+        }
+<span class="nc" id="L258">        BOMBcount+=1;</span>
+
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        if (LEFT == 32) {</span>
+<span class="nc" id="L261">            app.image(imageHon, xVal-32, verExplosion);</span>
+
+<span class="nc bnc" id="L263" title="All 2 branches missed.">        } else if (LEFT == 64) {</span>
+<span class="nc" id="L264">            app.image(imageHon, xVal-32, verExplosion);</span>
+<span class="nc" id="L265">            app.image(imageEndleft, xVal-64, verExplosion);</span>
+
+        } else {
+            ;
+        }
+
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if (RIGHT == 32) {</span>
+<span class="nc" id="L272">            app.image(imageHon, this.xVal + 32, verExplosion);</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">        } else if (RIGHT == 64) {</span>
+<span class="nc" id="L274">            app.image(imageHon, this.xVal + 32, verExplosion);</span>
+<span class="nc" id="L275">            app.image(imageEndright, this.xVal + 64, verExplosion);</span>
+
+        } else {
+            ;
+        }
+
+<span class="nc bnc" id="L281" title="All 2 branches missed.">        if (TOP == 32) {</span>
+<span class="nc" id="L282">            app.image(imageVer, xVal, verExplosion - 32);</span>
+
+<span class="nc bnc" id="L284" title="All 2 branches missed.">        } else if (TOP == 64) {</span>
+<span class="nc" id="L285">            app.image(imageVer,xVal, verExplosion - 32);</span>
+<span class="nc" id="L286">            app.image(imageEndtop,xVal, verExplosion - 64);</span>
+
+        } else {
+            ;
+        }
+
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (BOTTOM== 32) {</span>
+<span class="nc" id="L293">            app.image(imageVer, xVal, verExplosion + 32);</span>
+
+<span class="nc bnc" id="L295" title="All 2 branches missed.">        } else if (BOTTOM == 64) {</span>
+<span class="nc" id="L296">            app.image(imageVer, xVal, verExplosion + 32);</span>
+<span class="nc" id="L297">            app.image(imageEndbottom, xVal, verExplosion + 64);</span>
+
+        } else {
+            ;
+        }
+<span class="nc" id="L302">    }</span>
+
+    /**
+     * given the PApplet object to draw bomb's before exploding, and 
+     * cycle to draw the next image in the array of the countdown of the bomb 
+     * before exploding so that it looks animated
+     * @param app PApplet object used to draw images
+     * @param cycle counter to draw the next image in the cycle of the bomb before explosion
+     */
+    public void draw(PApplet app, int cycle) {
+<span class="nc" id="L312">        app.image(bombBefore[cycle], xVal, yVal+15);</span>
+
+<span class="nc" id="L314">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

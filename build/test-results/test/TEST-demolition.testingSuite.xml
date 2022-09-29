@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="demolition.testingSuite" tests="6" skipped="0" failures="0" errors="0" timestamp="2021-11-05T09:27:39" hostname="macbookquynhnhu.shared.sydney.edu.au" time="2.098">
+  <properties/>
+  <testcase name="yellowEnemiesTest()" classname="demolition.testingSuite" time="0.031"/>
+  <testcase name="simpleTest()" classname="demolition.testingSuite" time="0.005"/>
+  <testcase name="appTest()" classname="demolition.testingSuite" time="2.05"/>
+  <testcase name="redEnemiesTest()" classname="demolition.testingSuite" time="0.002"/>
+  <testcase name="Bombtest()" classname="demolition.testingSuite" time="0.002"/>
+  <testcase name="playerTest()" classname="demolition.testingSuite" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

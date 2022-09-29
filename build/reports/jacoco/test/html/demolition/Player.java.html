@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">A2_INFO1113_510567789</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import java.util.*;
+import java.io.*;
+
+
+public class Player {
+
+<span class="fc" id="L11">    protected int yVal = 0;</span>
+<span class="fc" id="L12">    protected int xVal = 0;</span>
+    protected PImage image;
+<span class="fc" id="L14">    protected PImage[] down = new PImage [4];</span>
+<span class="fc" id="L15">    protected PImage[] up = new PImage [4];</span>
+<span class="fc" id="L16">    protected PImage[] right = new PImage [4];</span>
+<span class="fc" id="L17">    protected PImage[] left = new PImage [4];</span>
+<span class="fc" id="L18">    protected PImage[] imageTodraw = down;</span>
+<span class="fc" id="L19">    protected int counterTurn = 0;</span>
+<span class="fc" id="L20">    protected String[][] wallsCheck = MapGame.mapping;</span>
+<span class="fc" id="L21">    protected int counting = 0;</span>
+    
+    private int playerLives;
+<span class="fc" id="L24">    private boolean killed = false;</span>
+<span class="fc" id="L25">    public boolean winning = false;</span>
+
+    /**
+     * Constructor for a player, requires x, y values, an image and num of lives
+     * the default value of killed is false.
+     * @param xVal in pixel
+     * @param yVal in pixel
+     * @param image the image of the player
+     * @param playerLives the lives that the player has
+     */    
+<span class="fc" id="L35">    public Player(int xVal, int yVal, PImage image, int playerLives) {</span>
+<span class="fc" id="L36">        this.xVal = xVal;</span>
+<span class="fc" id="L37">        this.yVal = yVal;</span>
+<span class="fc" id="L38">        this.image = image;</span>
+<span class="fc" id="L39">        this.playerLives = playerLives;</span>
+<span class="fc" id="L40">        this.killed = false;</span>
+
+<span class="fc" id="L42">    }</span>
+    
+    /**
+     * Set imageTodraw to the corresponding method which is down
+     * Checking the x,y coordinates of the player's downward moves to see if 
+     * they encouter any walls. Set y value to be itself, and return false if it does, otherwise 
+     * increment the yVal by 32 and return true.
+     * @return true or false,
+     */
+    public boolean moveDown() {
+<span class="nc" id="L52">        int row = (yVal + 32)/32 - 1;</span>
+<span class="nc" id="L53">        int col = xVal/32;</span>
+<span class="nc" id="L54">        imageTodraw = down;</span>
+
+<span class="nc bnc" id="L56" title="All 4 branches missed.">        if (wallsCheck [row][col].equals(&quot;W&quot;) ||  wallsCheck [row][col].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L57">            yVal = yVal;</span>
+        }else {
+<span class="nc" id="L59">            yVal += 32;</span>
+<span class="nc" id="L60">            return true;</span>
+        }
+<span class="nc" id="L62">        return false;</span>
+    }
+
+    /**
+     * Set imageTodraw to the corresponding method which is up
+     * Checking the x,y coordinates of the player's upward moves to see if 
+     * they encouter any walls. Set y value to be itself, and return false if it does, otherwise 
+     * decrement the yVal by 32 and return true.
+     * @return true or false,
+     */
+    public boolean moveUp() {
+<span class="nc" id="L73">        int row = (yVal - 32)/32 - 1;</span>
+<span class="nc" id="L74">        int col = xVal/32;</span>
+<span class="nc" id="L75">        imageTodraw = up;</span>
+
+<span class="nc bnc" id="L77" title="All 4 branches missed.">        if (wallsCheck [row][col].equals(&quot;W&quot;) ||  wallsCheck [row][col].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L78">            yVal = yVal;</span>
+        }else {
+<span class="nc" id="L80">            yVal -= 32;</span>
+<span class="nc" id="L81">            return true;</span>
+        }
+<span class="nc" id="L83">        return false;</span>
+    }
+
+    /**
+     * Set imageTodraw to the corresponding method which is left
+     * Checking the x,y coordinates of the player's left moves to see if 
+     * they encouter any walls. Set x value to be itself, and return false if it does, otherwise 
+     * decrement the xVal by 32 and return true.
+     * @return true or false,
+     */
+    public boolean moveLeft() {
+<span class="nc" id="L94">        int row = (yVal/32)-1;</span>
+<span class="nc" id="L95">        int col = (xVal - 32)/32;</span>
+<span class="nc" id="L96">        imageTodraw = left;</span>
+
+<span class="nc bnc" id="L98" title="All 4 branches missed.">        if (wallsCheck [row][col].equals(&quot;W&quot;) ||  wallsCheck [row][col].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L99">            xVal = xVal;</span>
+        }else {
+<span class="nc" id="L101">            xVal-=32;</span>
+<span class="nc" id="L102">            return true;</span>
+        }
+<span class="nc" id="L104">        return false;</span>
+    }
+
+    /**
+     * Set imageTodraw to the corresponding method which is right
+     * Checking the x,y coordinates of the player's right moves to see if 
+     * they encouter any walls. Set x value to be itself, and return false if it does, otherwise 
+     * increment the xVal by 32 and return true.
+     * @return true or false,
+     */
+    public boolean moveRight() {
+<span class="nc" id="L115">        int row = (yVal/32)-1;</span>
+<span class="nc" id="L116">        int col = (xVal + 32)/32;</span>
+<span class="nc" id="L117">        imageTodraw = right;</span>
+
+<span class="nc bnc" id="L119" title="All 4 branches missed.">        if (wallsCheck [row][col].equals(&quot;W&quot;) ||  wallsCheck [row][col].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L120">            xVal = xVal;</span>
+        }else{
+<span class="nc" id="L122">            xVal+=32;</span>
+<span class="nc" id="L123">            return true;</span>
+        }
+<span class="nc" id="L125">        return false;</span>
+    }
+
+    /**
+     * Set imageTodraw to the corresponding method which is down
+     * Checking the x,y coordinates of the player's downward moves to see if 
+     * they encouter any walls. Set y value to be itself, and return false if it does, otherwise 
+     * increment the yVal by 32 and return true.
+     * @return true or false,
+     */
+
+    /**
+     * @return current x coordinate of the player in the map
+     */
+    public int getxVal(){
+<span class="fc" id="L140">        return this.xVal;</span>
+    }
+
+    /**
+     * @return current y coordinate of the player in the map
+     */
+    public int getyVal(){
+<span class="fc" id="L147">        return this.yVal;</span>
+    }
+
+    /**
+     * if playerLives is less than 0, then set it equal to 0 and return playerLives,
+     * otherwise return the current playerLives 
+     * @return playerLives
+     */
+    public int getLives() {
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (this.playerLives &lt; 0) {</span>
+<span class="nc" id="L157">            this.playerLives = 0;</span>
+        }
+<span class="fc" id="L159">        return this.playerLives;</span>
+    }
+
+    /**
+     * if the player's killed is true then set the killed back to false and return false.
+     * Otherwise, return true 
+     * @return true or false
+     */
+    public boolean isAlive() {
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (this.killed == true) {</span>
+<span class="fc" id="L169">            this.killed = false;</span>
+<span class="fc" id="L170">            return false;</span>
+
+        } else {
+<span class="fc" id="L173">            return true;</span>
+        }
+    }
+
+    /**
+     * if the player's lives equal to 0, return true, otherwise, return false
+     * @return true or false
+     */
+    public boolean isGameOver() {
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (this.playerLives == 0) {</span>
+<span class="nc" id="L183">            return true;</span>
+        }
+<span class="fc" id="L185">        return false;</span>
+    }
+
+    /**
+     * given a bomb, this will check if the player is caught in the explosion of the bomb
+     * from all 4 directions
+     * decrement the player's lives by 1 and set killed to true if it does 
+     * @param bomb the bomb object
+     */
+    public void bombCollision(Bomb bomb) {
+        // verbottom
+<span class="pc bpc" id="L196" title="2 of 4 branches missed.">        if (this.yVal &lt;= bomb.getyVal() + bomb.BOTTOM &amp;&amp; this.yVal &gt;= bomb.getyVal()</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        &amp;&amp; this.xVal == bomb.getxVal()) {</span>
+<span class="fc" id="L198">            this.playerLives -= 1;</span>
+<span class="fc" id="L199">            this.killed = true;</span>
+        
+        // vertop
+<span class="pc bpc" id="L202" title="2 of 4 branches missed.">        } else if (this.yVal &gt;= bomb.getyVal() - bomb.TOP &amp;&amp; this.yVal &lt;= bomb.getyVal()</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        &amp;&amp; this.xVal == bomb.getxVal()) {</span>
+<span class="nc" id="L204">            this.playerLives -= 1;</span>
+<span class="nc" id="L205">            this.killed = true;</span>
+        
+        // honright
+<span class="pc bpc" id="L208" title="1 of 4 branches missed.">        } else if (this.xVal &lt;= bomb.getxVal() + bomb.RIGHT &amp;&amp; this.xVal &gt;= bomb.getxVal() </span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        &amp;&amp; this.yVal == bomb.getyVal()) {</span>
+<span class="fc" id="L210">            this.playerLives -= 1;</span>
+<span class="fc" id="L211">            this.killed = true;</span>
+
+        // honleft
+<span class="pc bpc" id="L214" title="2 of 4 branches missed.">        } else if (this.xVal &gt;= bomb.getxVal() - bomb.LEFT &amp;&amp; this.xVal &lt;= bomb.getxVal() </span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        &amp;&amp; this.yVal == bomb.getyVal()) {</span>
+<span class="fc" id="L216">            this.playerLives -= 1;</span>
+<span class="fc" id="L217">            this.killed = true;</span>
+        }
+<span class="fc" id="L219">    }</span>
+
+    /**
+     * given the list of both red and yellow enemies, this will check if at anytime
+     * the player will encouter to the enemies.
+     * decrement the player's lives by 1 and set killed to true if it does 
+     * @param red which is the list of red enemies
+     * @param yellow which is the list of yellow enemies
+     */
+    public void enemiesCollision (List&lt;Enemies&gt; red, List&lt;yellowEnemies&gt; yellow) {
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (int i = 0; i &lt; red.size(); i++) {</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">            if (red.get(i).getLives() != 0) {</span>
+<span class="pc bpc" id="L231" title="3 of 4 branches missed.">                if (this.xVal == red.get(i).getxVal() &amp;&amp; this.yVal == red.get(i).getyVal()) {</span>
+<span class="nc" id="L232">                    this.playerLives-=1;</span>
+<span class="nc" id="L233">                    this.killed=true;</span>
+                }
+            }
+        }
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        for (int i = 0; i &lt; yellow.size(); i++) {</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">            if (yellow.get(i).getLives() != 0) {</span>
+<span class="pc bpc" id="L239" title="3 of 4 branches missed.">                if (this.xVal == yellow.get(i).getxVal() &amp;&amp; this.yVal == yellow.get(i).getyVal()) {</span>
+<span class="nc" id="L240">                    this.playerLives-=1;</span>
+<span class="nc" id="L241">                    this.killed=true;</span>
+                }
+            }
+        }
+<span class="fc" id="L245">    }</span>
+
+    /**
+     * given the PApplet object which help to load the image of the red enemies's 4 directions
+     * @param app PApplet object to load the image of the player
+     */
+    public void loadImage (PApplet app) {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        for (int i=0; i &lt; 4; i++) {</span>
+<span class="fc" id="L253">            down[i] = app.loadImage(&quot;src/main/resources/player/player&quot;+(i+1)+&quot;.png&quot;);</span>
+<span class="fc" id="L254">            up[i] = app.loadImage(&quot;src/main/resources/player/player_up&quot;+(i+1)+&quot;.png&quot;);</span>
+<span class="fc" id="L255">            right[i] = app.loadImage(&quot;src/main/resources/player/player_right&quot;+(i+1)+&quot;.png&quot;);</span>
+<span class="fc" id="L256">            left[i] = app.loadImage(&quot;src/main/resources/player/player_left&quot;+(i+1)+&quot;.png&quot;);</span>
+        }
+
+<span class="fc" id="L259">    }</span>
+
+    /**
+     * given the coordination of x and y of the goal tile which will be check against 
+     * the player's current location to see if the player reach the goal.
+     * set the winning to true and return true if he does. Otherwise return false.
+     * @param goalx which is the goal x-coordinate location in pixel
+     * @param goaly which is the goal y-coordinate location in pixel
+     * @return winning
+     */
+    public boolean isWin(int goalx, int goaly) {
+<span class="pc bpc" id="L270" title="1 of 4 branches missed.">        if (this.xVal == goalx &amp;&amp; this.yVal == goaly) {</span>
+<span class="fc" id="L271">            winning = true;</span>
+<span class="fc" id="L272">            return winning;</span>
+        }
+<span class="fc" id="L274">        return winning;</span>
+    }
+
+    /**
+     * given the PApplet object which help to draw the image of the red enemies's corresponding 
+     * direction. If killed equals to true and the player's lives still greater than 0 than 
+     * set the x,y of player to be back to the original position
+     * @param app PApplet object to draw the image of the player
+     */
+    public void draw(PApplet app) {
+<span class="fc" id="L284">        app.image(imageTodraw[counterTurn],this.xVal,this.yVal);</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">        if (counting == 8) {</span>
+<span class="nc" id="L286">            counterTurn = (counterTurn + 1) % imageTodraw.length;</span>
+<span class="nc" id="L287">            counting = 0;</span>
+        }
+<span class="fc" id="L289">        counting+=1;</span>
+<span class="fc" id="L290">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

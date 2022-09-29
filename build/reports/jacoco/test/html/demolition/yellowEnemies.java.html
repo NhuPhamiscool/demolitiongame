@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>yellowEnemies.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">A2_INFO1113_510567789</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">yellowEnemies.java</span></div><h1>yellowEnemies.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import java.util.*;
+
+public class yellowEnemies extends Enemies {
+    /**
+     * Constructor for a yellowEnemies, requires x, y values, an image and num of lives
+     * @param xVal in pixel
+     * @param yVal in pixel
+     * @param image the image of the yellow enemies
+     * @param lives the lives that the yellow enemies has
+     */
+    public yellowEnemies (int xVal, int yVal, PImage image, int lives) {
+<span class="fc" id="L16">        super( xVal, yVal, image, lives);</span>
+<span class="fc" id="L17">    }</span>
+
+    /**
+     * control the direction of yellowEnemies and assign the corresponding images
+     */
+    public void moving () {
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if (isBlocked.equals(&quot;left&quot;)) {</span>
+<span class="nc" id="L24">            moveLeft();</span>
+<span class="nc" id="L25">            imageTodraw = left;</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        } else if (isBlocked.equals(&quot;right&quot;)) {</span>
+<span class="fc" id="L27">            moveRight();</span>
+<span class="fc" id="L28">            imageTodraw = right;</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        } else if (isBlocked.equals(&quot;down&quot;)) {</span>
+<span class="nc" id="L30">            moveDown();</span>
+<span class="nc" id="L31">            imageTodraw = down;</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        } else if (isBlocked.equals(&quot;up&quot;)) {</span>
+<span class="nc" id="L33">            moveUp();</span>
+<span class="nc" id="L34">            imageTodraw = up;</span>
+        }
+        
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * checking the x,y coordinates of yellowEnemies' left moves to see if 
+     * they encouter any walls. Set isBlocked to be &quot;up&quot;, and return false if it does, otherwise 
+     * decrement the xVal by 32 and return true.
+     * @return true or false,
+     */
+    public boolean moveLeft() {
+<span class="fc" id="L46">        int rowLeft = (yVal/32) - 1;</span>
+<span class="fc" id="L47">        int colLeft = (xVal - 32)/32;</span>
+
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">        if (wallsCheck [rowLeft][colLeft].equals(&quot;W&quot;) ||  wallsCheck [rowLeft][colLeft].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L50">            isBlocked = &quot;up&quot;;</span>
+        } else {
+<span class="fc" id="L52">            xVal-=32;</span>
+<span class="fc" id="L53">            return true;</span>
+        }
+<span class="nc" id="L55">        return false;</span>
+            
+    }
+
+    /**
+     * checking the x,y coordinates of yellowEnemies' right moves to see if 
+     * they encouter any walls. Set isBlocked to be &quot;down&quot;, and return false if it does, otherwise 
+     * increment the xVal by 32 and return true.
+     * @return true or false,
+     */
+    public boolean moveRight() {
+<span class="fc" id="L66">        int rowRight = (yVal/32)-1;</span>
+<span class="fc" id="L67">        int colRight = (xVal + 32)/32;</span>
+
+<span class="pc bpc" id="L69" title="1 of 4 branches missed.">        if (wallsCheck [rowRight][colRight].equals(&quot;W&quot;) ||  wallsCheck [rowRight][colRight].equals(&quot;B&quot;)) {            </span>
+<span class="fc" id="L70">            isBlocked = &quot;down&quot;;</span>
+
+        } else {
+<span class="fc" id="L73">            xVal += 32;</span>
+<span class="fc" id="L74">            return true;</span>
+        }
+<span class="fc" id="L76">        return false;</span>
+    }
+
+    /**
+     * checking the x,y coordinates of yellowEnemies' downward moves to see if 
+     * they encouter any walls. Set isBlocked to be &quot;left&quot;, and return false if it does, otherwise 
+     * increment the y value by 32, and return true.
+     * @return true or false,
+     */
+    public boolean moveDown() {
+<span class="fc" id="L86">        int rowDown = (yVal + 32)/32 - 1;</span>
+<span class="fc" id="L87">        int colDown = xVal/32;</span>
+
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">        if (wallsCheck [rowDown][colDown].equals(&quot;W&quot;) ||  wallsCheck [rowDown][colDown].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L90">            isBlocked = &quot;left&quot;;</span>
+        } else {
+<span class="fc" id="L92">            yVal+=32;</span>
+<span class="fc" id="L93">            return true;</span>
+        }
+<span class="nc" id="L95">        return false;</span>
+    }
+
+    /**
+     * checking the x,y coordinates of yellowEnemies' upward moves to see if 
+     * they encouter any walls. Set isBlocked to be &quot;right&quot;, and return false if it does, otherwise 
+     * decrement the y value by 32, and return true.
+     * @return true or false,
+     */
+    public boolean moveUp() {
+<span class="fc" id="L105">        int rowUp = (yVal - 32)/32 - 1;</span>
+<span class="fc" id="L106">        int colUp = xVal/32;</span>
+
+<span class="pc bpc" id="L108" title="2 of 4 branches missed.">        if (wallsCheck [rowUp][colUp].equals(&quot;W&quot;) ||  wallsCheck [rowUp][colUp].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L109">            isBlocked = &quot;right&quot;;</span>
+        } else {
+<span class="fc" id="L111">            yVal -= 32;</span>
+<span class="fc" id="L112">            return true;</span>
+        }
+<span class="nc" id="L114">        return false;</span>
+    }
+
+    /**
+     * load images of every direction of yellowEnemies
+     * @param app PApplet object used to load the images of the yellow enemies
+     */
+    public void loadImage (PApplet app) {
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (int i=0; i &lt; 4; i++) {</span>
+<span class="fc" id="L123">            this.down[i] = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down&quot;+(i+1)+&quot;.png&quot;);</span>
+<span class="fc" id="L124">            this.up[i] = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up&quot;+(i+1)+&quot;.png&quot;);</span>
+<span class="fc" id="L125">            this.right[i] = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right&quot;+(i+1)+&quot;.png&quot;);</span>
+<span class="fc" id="L126">            this.left[i] = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left&quot;+(i+1)+&quot;.png&quot;);</span>
+        }
+<span class="fc" id="L128">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
